@@ -3,6 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { WhatsAppController } from './whatsapp.controller';
 import { WhatsAppService } from './whatsapp.service';
 
+jest.mock('qrcode', () => ({
+  __esModule: true,
+  default: {
+    toDataURL: jest.fn().mockResolvedValue('data:image/png;base64,mock-qr'),
+  },
+}));
+
 describe('WhatsAppController', () => {
   const createController = () => {
     const whatsapp = {
@@ -80,13 +87,16 @@ describe('WhatsAppController', () => {
     expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
   });
 
-  it('returns qr-data for valid password', () => {
+  it('returns qr-data for valid password', async () => {
     const { controller } = createController();
     const res = createResponse();
 
-    controller.getQrData('secret-pass', res as any);
+    await controller.getQrData('secret-pass', res as any);
 
-    expect(res.json).toHaveBeenCalledWith({ qr: 'qr-data', state: 'connecting' });
+    expect(res.json).toHaveBeenCalledWith({
+      qrImage: 'data:image/png;base64,mock-qr',
+      state: 'connecting',
+    });
   });
 
   it('clears session only with valid password', async () => {
