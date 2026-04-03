@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { WhatsAppService } from './whatsapp.service.js';
-import { WhatsAppController } from './whatsapp.controller.js';
-import { AuthCleanupService } from './auth-cleanup.service.js';
+import { WhatsAppService } from './whatsapp.service';
+import { WhatsAppController } from './whatsapp.controller';
+import { AuthCleanupService } from './auth-cleanup.service';
 
 @Module({
   controllers: [WhatsAppController],

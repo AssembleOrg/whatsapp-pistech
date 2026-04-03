@@ -1,0 +1,10 @@
+process.env.NODE_ENV ??= 'test';
+process.env.API_KEY ??= 'test-api-key';
+process.env.QR_PASSWORD ??= 'test-password';
+process.env.AUTH_DIR ??= '/tmp/auth_info_test';
+process.env.MESSAGE_DELAY_MIN ??= '0';
+process.env.MESSAGE_DELAY_MAX ??= '1';
+process.env.THROTTLE_TTL ??= '60000';
+process.env.THROTTLE_LIMIT ??= '20';
+process.env.ALLOWED_ORIGINS ??= '*';
+process.env.WHITELISTED_GROUPS ??= '';

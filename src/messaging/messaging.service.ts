@@ -5,8 +5,8 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { WhatsAppService } from '../whatsapp/whatsapp.service.js';
-import type { ReportIssueDto } from './dto/report-issue.dto.js';
+import { WhatsAppService } from '../whatsapp/whatsapp.service';
+import type { ReportIssueDto } from './dto/report-issue.dto';
 
 interface QueueItem {
   execute: () => Promise<void>;

@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { AuthCleanupService } from '../whatsapp/auth-cleanup.service.js';
+import { AuthCleanupService } from '../whatsapp/auth-cleanup.service';
 
 @ApiTags('health')
 @Controller()

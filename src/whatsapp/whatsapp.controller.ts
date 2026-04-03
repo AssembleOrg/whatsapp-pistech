@@ -2,7 +2,8 @@ import { Controller, Get, Post, Query, Res, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiExcludeController } from '@nestjs/swagger';
 import type { Response } from 'express';
-import { WhatsAppService } from './whatsapp.service.js';
+import QRCode from 'qrcode';
+import { WhatsAppService } from './whatsapp.service';
 
 @ApiExcludeController()
 @Controller('whatsapp')
@@ -38,14 +39,28 @@ export class WhatsAppController {
   }
 
   @Get('qr-data')
-  getQrData(@Query('password') password: string, @Res() res: Response) {
+  async getQrData(
+    @Query('password') password: string,
+    @Res() res: Response,
+  ) {
     const expected = this.config.get<string>('QR_PASSWORD');
     if (password !== expected) {
       return res.status(HttpStatus.UNAUTHORIZED).json({ error: 'Unauthorized' });
     }
 
+    const qrString = this.whatsapp.getQrCode();
+    let qrImage: string | null = null;
+
+    if (qrString) {
+      qrImage = await QRCode.toDataURL(qrString, {
+        width: 300,
+        margin: 2,
+        color: { dark: '#000000', light: '#ffffff' },
+      });
+    }
+
     return res.json({
-      qr: this.whatsapp.getQrCode(),
+      qrImage,
       state: this.whatsapp.getConnectionState(),
     });
   }
@@ -112,7 +127,7 @@ export class WhatsAppController {
     .status.connecting { background: #f59e0b; color: #000; }
     .status.disconnected { background: #ef4444; color: #fff; }
     #qr-container { background: #fff; border-radius: 12px; padding: 1rem; margin: 1rem 0; min-height: 264px; display: flex; align-items: center; justify-content: center; }
-    #qr-container canvas { max-width: 100%; }
+    #qr-container img { max-width: 100%; border-radius: 8px; }
     .no-qr { color: #666; font-size: 0.9rem; }
     .actions { margin-top: 1.5rem; }
     .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; margin: 0.25rem; }
@@ -121,7 +136,6 @@ export class WhatsAppController {
     .btn-secondary { background: #333; color: #e0e0e0; }
     .btn-secondary:hover { background: #444; }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"><\/script>
 </head>
 <body>
   <div class="card">
@@ -138,7 +152,6 @@ export class WhatsAppController {
 
   <script>
     const PASSWORD = '${password}';
-    let lastQr = null;
 
     async function fetchStatus() {
       try {
@@ -159,15 +172,12 @@ export class WhatsAppController {
 
       if (data.state === 'open') {
         qrContainer.innerHTML = '<span class="no-qr" style="color:#25D366;font-size:1.5rem;">Conectado</span>';
-        lastQr = null;
         return;
       }
 
-      if (data.qr && data.qr !== lastQr) {
-        lastQr = data.qr;
-        qrContainer.innerHTML = '<canvas id="qr-canvas"></canvas>';
-        QRCode.toCanvas(document.getElementById('qr-canvas'), data.qr, { width: 264, margin: 1 });
-      } else if (!data.qr) {
+      if (data.qrImage) {
+        qrContainer.innerHTML = '<img src="' + data.qrImage + '" alt="QR Code" />';
+      } else {
         qrContainer.innerHTML = '<span class="no-qr">Esperando QR...</span>';
       }
     }
@@ -175,7 +185,6 @@ export class WhatsAppController {
     async function clearSession() {
       if (!confirm('Borrar sesion? Debera escanear el QR nuevamente.')) return;
       await fetch('/whatsapp/clear-session?password=' + encodeURIComponent(PASSWORD), { method: 'POST' });
-      lastQr = null;
     }
 
     setInterval(fetchStatus, 3000);

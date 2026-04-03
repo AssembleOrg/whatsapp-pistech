@@ -22,11 +22,11 @@ RUN pnpm install --frozen-lockfile --prod
 
 COPY --from=base /app/dist ./dist
 
-# Auth directory permissions
-RUN mkdir -p /data/auth_info && chmod 700 /data/auth_info
+# Auth directory permissions - mount path must match Railway volume
+RUN mkdir -p /auth_info && chmod 700 /auth_info
 
 ENV NODE_ENV=production
-ENV AUTH_DIR=/data/auth_info
+ENV AUTH_DIR=/auth_info
 
 EXPOSE 3000
 

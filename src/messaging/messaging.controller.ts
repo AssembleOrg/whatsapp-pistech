@@ -13,8 +13,8 @@ import {
   ApiHeader,
   ApiResponse,
 } from '@nestjs/swagger';
-import { ApiKeyGuard } from '../common/guards/api-key.guard.js';
-import { MessagingService } from './messaging.service.js';
+import { ApiKeyGuard } from '../common/guards/api-key.guard';
+import { MessagingService } from './messaging.service';
 import {
   SendTextDto,
   SendImageDto,
@@ -23,8 +23,8 @@ import {
   SendDocumentDto,
   SendLocationDto,
   SendContactDto,
-} from './dto/send-message.dto.js';
-import { ReportIssueDto } from './dto/report-issue.dto.js';
+} from './dto/send-message.dto';
+import { ReportIssueDto } from './dto/report-issue.dto';
 
 @ApiTags('messaging')
 @ApiHeader({ name: 'x-api-key', required: true, description: 'API key for authentication' })

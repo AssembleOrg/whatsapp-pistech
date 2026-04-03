@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { validateEnv } from './config/env.config.js';
-import { WhatsAppModule } from './whatsapp/whatsapp.module.js';
-import { MessagingModule } from './messaging/messaging.module.js';
-import { HealthModule } from './health/health.module.js';
+import { validateEnv } from './config/env.config';
+import { WhatsAppModule } from './whatsapp/whatsapp.module';
+import { MessagingModule } from './messaging/messaging.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
